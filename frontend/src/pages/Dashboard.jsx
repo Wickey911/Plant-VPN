@@ -1,6 +1,6 @@
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Plant3D from "../components/plant/Plant3D";
+import Plant3D, { Plant3DNavbar } from "../components/plant/Plant3D";
 import RightPanel from "../components/panels/RightPanel";
 import BottomPanel from "../components/panels/BottomPanel";
 import { usePlantStore } from "../store/plantStore";
@@ -143,6 +143,7 @@ function OverviewBar() {
 export default function Dashboard() {
   useSensorSimulation();
 
+  const containerRef = useRef();
   const { selectedAsset, setSelected } = usePlantStore();
   const handleAssetSelect = useCallback(eq => setSelected(eq), [setSelected]);
   const hasSelection = Boolean(selectedAsset);
@@ -154,27 +155,35 @@ export default function Dashboard() {
       style={{
         height: "100%",
         display: "grid",
-        gridTemplateRows: "120px 1fr 165px",
+        gridTemplateRows: "120px 40px 300px 165px",
         overflow: "hidden",
         background: "var(--bg)",
       }}
     >
-      {/* ROW 1 — Overview bar (full width, horizontal) */}
+      {/* ROW 1 — Overview bar (gauges + KPI tiles) */}
       <div style={{ gridRow: "1", overflow: "hidden" }}>
         <OverviewBar />
       </div>
 
-      {/* ROW 2 — 3D Refinery (below overview) + conditional equipment panel */}
+      {/* ROW 2 — 3D model navbar (search, heatmap, reset) */}
+      <div style={{ gridRow: "2", overflow: "hidden" }}>
+        <Plant3DNavbar containerRef={containerRef} />
+      </div>
+
+      {/* ROW 3 — 3D Refinery canvas */}
       <div style={{
-        gridRow: "2",
+        gridRow: "3",
         overflow: "hidden",
         position: "relative",
         display: "grid",
         gridTemplateColumns: `1fr ${hasSelection ? "300px" : "0px"}`,
         transition: "grid-template-columns 0.28s ease",
+        maxWidth: 900,
+        width: "100%",
+        margin: "0 auto",
       }}>
         <div style={{ overflow: "hidden", position: "relative" }}>
-          <Plant3D onAssetSelect={handleAssetSelect} />
+          <Plant3D onAssetSelect={handleAssetSelect} containerRef={containerRef} />
         </div>
 
         <AnimatePresence>
@@ -197,8 +206,8 @@ export default function Dashboard() {
         </AnimatePresence>
       </div>
 
-      {/* ROW 3 — Bottom analytics charts */}
-      <div style={{ gridRow: "3", overflow: "hidden", borderTop: "1px solid var(--border)" }}>
+      {/* ROW 4 — Bottom analytics charts */}
+      <div style={{ gridRow: "4", overflow: "hidden", borderTop: "1px solid var(--border)" }}>
         <BottomPanel />
       </div>
     </motion.div>

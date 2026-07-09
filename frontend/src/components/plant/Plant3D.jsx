@@ -1018,9 +1018,113 @@ function Legend() {
   );
 }
 
+// ─── Exported navbar (rendered outside the canvas in Dashboard) ───────────────
+export function Plant3DNavbar({ containerRef }) {
+  const [q, setQ] = useState("");
+  const { heatMapMode, setHeatMapMode, setCameraTarget, setSelected } = usePlantStore();
+
+  const go = () => {
+    const eq = EQUIPMENT.find(e =>
+      e.id.toLowerCase().includes(q.toLowerCase()) ||
+      e.name.toLowerCase().includes(q.toLowerCase()) ||
+      e.area?.toLowerCase().includes(q.toLowerCase())
+    );
+    if (!eq) return;
+    const [px,,pz] = eq.position;
+    const h2 = (eq.params?.h ?? 2);
+    setCameraTarget({ position:[px+7,h2*0.6+6,pz+11], target:[px,h2*0.3,pz] });
+    setSelected(eq);
+    setQ("");
+  };
+
+  const handleReset = () => {
+    setCameraTarget({ position:[0,35,55], target:[0,0,-5] });
+  };
+
+  const handleFullscreen = () => {
+    if (!document.fullscreenElement) containerRef?.current?.requestFullscreen();
+    else document.exitFullscreen();
+  };
+
+  const btnBase = (active) => ({
+    height: 30, borderRadius: 4, padding: "0 10px",
+    display: "flex", alignItems: "center", justifyContent: "center",
+    cursor: "pointer", fontSize: 11, fontWeight: 600,
+    background: active ? "rgba(56,189,248,0.15)" : "rgba(37,99,235,0.06)",
+    border: `1px solid ${active ? "rgba(56,189,248,0.55)" : "rgba(37,99,235,0.18)"}`,
+    color: active ? "#0EA5E9" : "var(--text2)",
+    transition: "all .15s",
+  });
+
+  return (
+    <div style={{
+      height: "100%",
+      display: "flex", alignItems: "center", gap: 8,
+      padding: "0 14px",
+      background: "rgba(26,42,60,0.96)",
+      borderTop: "1px solid rgba(56,189,248,0.12)",
+      borderBottom: "1px solid rgba(56,189,248,0.12)",
+    }}>
+      {/* Search */}
+      <div style={{ display: "flex", gap: 4, flex: 1, maxWidth: 280 }}>
+        <input
+          value={q} onChange={e => setQ(e.target.value)}
+          onKeyDown={e => e.key === "Enter" && go()}
+          placeholder="Search equipment tag…"
+          style={{
+            flex: 1,
+            background: "rgba(4,8,18,0.80)",
+            border: "1px solid rgba(56,189,248,0.22)",
+            borderRadius: 4, color: "#C0CCDA",
+            padding: "5px 10px", fontSize: 10.5,
+            fontFamily: "JetBrains Mono, monospace", outline: "none",
+          }}
+        />
+        <button onClick={go} style={{
+          ...btnBase(false), padding: "0 10px", color: "#38BDF8",
+          background: "rgba(56,189,248,0.10)",
+          border: "1px solid rgba(56,189,248,0.25)",
+        }}>⌕</button>
+      </div>
+
+      {/* Divider */}
+      <div style={{ width: 1, height: 22, background: "rgba(56,189,248,0.15)" }}/>
+
+      {/* Label */}
+      <span style={{ fontSize: 9, color: "rgba(56,189,248,0.5)", fontFamily: "JetBrains Mono,monospace", letterSpacing: 1, textTransform: "uppercase" }}>Heatmap</span>
+
+      {/* T / P / V heatmap toggles */}
+      {["T","P","V"].map((k, i) => {
+        const modes = ["temperature", "pressure", "vibration"];
+        const labels = ["Temperature", "Pressure", "Vibration"];
+        const active = heatMapMode === modes[i];
+        return (
+          <button key={k} title={labels[i]} onClick={() => setHeatMapMode(active ? null : modes[i])} style={btnBase(active)}>
+            {k}
+          </button>
+        );
+      })}
+
+      {/* Divider */}
+      <div style={{ width: 1, height: 22, background: "rgba(56,189,248,0.15)" }}/>
+
+      {/* Reset + Fullscreen */}
+      <button title="Reset camera" onClick={handleReset} style={btnBase(false)}>⟳ Reset</button>
+      <button title="Fullscreen" onClick={handleFullscreen} style={btnBase(false)}>⛶</button>
+
+      {/* 3D badge */}
+      <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6 }}>
+        <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#38BDF8", boxShadow: "0 0 6px #38BDF8", animation: "pulse-dot 1.4s infinite" }}/>
+        <span style={{ fontSize: 9, color: "rgba(56,189,248,0.7)", fontFamily: "JetBrains Mono,monospace", letterSpacing: 1 }}>3D SCENE LIVE</span>
+      </div>
+    </div>
+  );
+}
+
 // ─── Root export ──────────────────────────────────────────────────────────────
-export default function Plant3D({ onAssetSelect }) {
-  const containerRef = useRef();
+export default function Plant3D({ onAssetSelect, containerRef: extRef }) {
+  const internalRef = useRef();
+  const containerRef = extRef || internalRef;
   const { setSelected } = usePlantStore();
 
   const handleSelect = useCallback((eq) => {
@@ -1028,37 +1132,24 @@ export default function Plant3D({ onAssetSelect }) {
     if (onAssetSelect) onAssetSelect(eq);
   }, [setSelected, onAssetSelect]);
 
-  const handleReset = useCallback(() => {
-    usePlantStore.getState().setCameraTarget({ position:[0,35,55], target:[0,0,-5] });
-  }, []);
-
-  const handleFullscreen = useCallback(() => {
-    if (!document.fullscreenElement) containerRef.current?.requestFullscreen();
-    else document.exitFullscreen();
-  }, []);
-
   return (
-    <div ref={containerRef} style={{width:"100%",height:"100%",position:"relative",background:"#1A2A3C"}}>
+    <div ref={containerRef} style={{ width:"100%", height:"100%", position:"relative", background:"#1A2A3C" }}>
       <Canvas
         camera={{ position:[0,35,55], fov:52, near:0.1, far:300 }}
         gl={{ antialias:true, toneMapping:THREE.ACESFilmicToneMapping, toneMappingExposure:0.78 }}
         style={{ background:"#1A2A3C" }}
       >
-        {/* Set the WebGL clear/scene background colour — must be inside Canvas */}
         <color attach="background" args={["#1A2A3C"]}/>
         <Suspense fallback={null}>
           <CameraController/>
           <RefineryScene onSelect={handleSelect}/>
           <EffectComposer multisampling={0}>
-            {/* Conservative bloom — only AI scan rings & flare flame pass threshold */}
             <Bloom intensity={0.32} luminanceThreshold={0.88} luminanceSmoothing={0.06} radius={0.42} mipmapBlur/>
             <Vignette darkness={0.46} offset={0.32}/>
           </EffectComposer>
         </Suspense>
       </Canvas>
 
-      <SearchBox/>
-      <Toolbar onReset={handleReset} onFullscreen={handleFullscreen}/>
       <MiniMap/>
       <Legend/>
     </div>
