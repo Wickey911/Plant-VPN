@@ -14,12 +14,7 @@ const Brownfield         = lazy(() => import("./pages/Brownfield"));
 const AICopilot          = lazy(() => import("./pages/AICopilot"));
 const KnowledgeGraph     = lazy(() => import("./pages/KnowledgeGraph"));
 const Reports            = lazy(() => import("./pages/Reports"));
-
-// Stub pages for sections not yet fully built
-function DigitalTwin() {
-  const Dashboard_ = lazy(() => import("./pages/Dashboard"));
-  return <Dashboard_ />;
-}
+const PlantView          = lazy(() => import("./pages/PlantView"));
 function ShutdownPlanner() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
@@ -47,7 +42,7 @@ function Settings() {
 const PAGE_MAP = {
   dashboard:   Dashboard,
   mission:     MissionControl,
-  digitaltwin: Dashboard,
+  digitaltwin: PlantView,
   assets:      Assets,
   predictive:  PredictiveMaintenance,
   brownfield:  Brownfield,

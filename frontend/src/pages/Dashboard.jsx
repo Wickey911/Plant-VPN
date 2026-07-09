@@ -1,7 +1,5 @@
-import { useCallback, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import Plant3D, { Plant3DNavbar } from "../components/plant/Plant3D";
-import RightPanel from "../components/panels/RightPanel";
+import { useCallback } from "react";
+import { motion } from "framer-motion";
 import BottomPanel from "../components/panels/BottomPanel";
 import { usePlantStore } from "../store/plantStore";
 import { useSensorSimulation } from "../hooks/useSensorSimulation";
@@ -139,14 +137,122 @@ function OverviewBar() {
   );
 }
 
+// ── 3D Plant preview card ───────────────────────────────────────────────────
+function Plant3DCard() {
+  const total    = EQUIPMENT.length;
+  const critical = EQUIPMENT.filter(e => e.health < 40).length;
+  const warning  = EQUIPMENT.filter(e => e.health >= 40 && e.health < 70).length;
+  const healthy  = total - critical - warning;
+
+  const dots = EQUIPMENT.map(e => ({
+    x: (e.position[0] + 27) / 58 * 100,
+    y: (e.position[2] + 28) / 60 * 100,
+    c: e.health > 70 ? "#22C55E" : e.health > 40 ? "#FBBF24" : "#EF4444",
+  }));
+
+  return (
+    <div style={{
+      height: "100%", display: "flex", flexDirection: "column",
+      background: "#0D1520",
+      borderTop: "1px solid rgba(56,189,248,0.10)",
+    }}>
+      {/* Card header */}
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "10px 16px",
+        borderBottom: "1px solid rgba(56,189,248,0.10)",
+        flexShrink: 0,
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 14 }}>🔷</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: "#C0CCDA", fontFamily: "JetBrains Mono,monospace" }}>3D PLANT SIMULATION</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          {[["#22C55E", healthy, "Healthy"], ["#FBBF24", warning, "Warning"], ["#EF4444", critical, "Critical"]].map(([c, v, l]) => (
+            <div key={l} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <div style={{ width: 6, height: 6, borderRadius: "50%", background: c, boxShadow: `0 0 4px ${c}` }}/>
+              <span style={{ fontSize: 10, color: c, fontFamily: "JetBrains Mono,monospace", fontWeight: 700 }}>{v}</span>
+              <span style={{ fontSize: 9, color: "rgba(100,120,140,0.8)" }}>{l}</span>
+            </div>
+          ))}
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent("app:navigate", { detail: "digitaltwin" }))}
+            style={{
+              padding: "5px 14px", borderRadius: 5, cursor: "pointer",
+              background: "rgba(56,189,248,0.12)",
+              border: "1px solid rgba(56,189,248,0.35)",
+              color: "#38BDF8", fontSize: 10, fontWeight: 700,
+              fontFamily: "JetBrains Mono,monospace",
+              display: "flex", alignItems: "center", gap: 6,
+              transition: "background .15s",
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = "rgba(56,189,248,0.22)"}
+            onMouseLeave={e => e.currentTarget.style.background = "rgba(56,189,248,0.12)"}
+          >
+            Open Full 3D View →
+          </button>
+        </div>
+      </div>
+
+      {/* Mini dot-map preview */}
+      <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
+        {/* Dark grid */}
+        <div style={{
+          position: "absolute", inset: 0,
+          backgroundImage: "linear-gradient(rgba(56,189,248,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,0.04) 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+        }}/>
+
+        {/* Equipment dots */}
+        {dots.map((d, i) => (
+          <div key={i} style={{
+            position: "absolute",
+            left: `${d.x}%`, top: `${d.y}%`,
+            width: 8, height: 8, borderRadius: "50%",
+            background: d.c, boxShadow: `0 0 6px ${d.c}`,
+            transform: "translate(-50%,-50%)",
+          }}/>
+        ))}
+
+        {/* Centre label */}
+        <div style={{
+          position: "absolute", inset: 0,
+          display: "flex", flexDirection: "column",
+          alignItems: "center", justifyContent: "center",
+          pointerEvents: "none",
+        }}>
+          <span style={{ fontSize: 36, opacity: 0.04 }}>⬡</span>
+        </div>
+
+        {/* Open CTA overlay */}
+        <div
+          onClick={() => window.dispatchEvent(new CustomEvent("app:navigate", { detail: "digitaltwin" }))}
+          style={{
+            position: "absolute", inset: 0, cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}
+        >
+          <div style={{
+            background: "rgba(13,21,32,0.65)",
+            border: "1px solid rgba(56,189,248,0.20)",
+            borderRadius: 8, padding: "10px 20px",
+            color: "#38BDF8", fontSize: 11, fontWeight: 700,
+            fontFamily: "JetBrains Mono,monospace",
+            display: "flex", alignItems: "center", gap: 8,
+            backdropFilter: "blur(4px)",
+          }}>
+            <span style={{ fontSize: 16 }}>🔷</span>
+            Click to open interactive 3D simulation
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Dashboard ──────────────────────────────────────────────────────────────
 export default function Dashboard() {
   useSensorSimulation();
-
-  const containerRef = useRef();
-  const { selectedAsset, setSelected } = usePlantStore();
-  const handleAssetSelect = useCallback(eq => setSelected(eq), [setSelected]);
-  const hasSelection = Boolean(selectedAsset);
 
   return (
     <motion.div
@@ -155,59 +261,23 @@ export default function Dashboard() {
       style={{
         height: "100%",
         display: "grid",
-        gridTemplateRows: "120px 40px 300px 165px",
+        gridTemplateRows: "120px 1fr 220px",
         overflow: "hidden",
         background: "var(--bg)",
       }}
     >
-      {/* ROW 1 — Overview bar (gauges + KPI tiles) */}
+      {/* ROW 1 — Overview bar */}
       <div style={{ gridRow: "1", overflow: "hidden" }}>
         <OverviewBar />
       </div>
 
-      {/* ROW 2 — 3D model navbar (search, heatmap, reset) */}
+      {/* ROW 2 — 3D Plant preview card */}
       <div style={{ gridRow: "2", overflow: "hidden" }}>
-        <Plant3DNavbar containerRef={containerRef} />
+        <Plant3DCard />
       </div>
 
-      {/* ROW 3 — 3D Refinery canvas */}
-      <div style={{
-        gridRow: "3",
-        overflow: "hidden",
-        position: "relative",
-        display: "grid",
-        gridTemplateColumns: `1fr ${hasSelection ? "300px" : "0px"}`,
-        transition: "grid-template-columns 0.28s ease",
-        maxWidth: 900,
-        width: "100%",
-        margin: "0 auto",
-      }}>
-        <div style={{ overflow: "hidden", position: "relative" }}>
-          <Plant3D onAssetSelect={handleAssetSelect} containerRef={containerRef} />
-        </div>
-
-        <AnimatePresence>
-          {hasSelection && (
-            <motion.div
-              key="equipment-status"
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 40 }}
-              transition={{ duration: 0.22, ease: "easeOut" }}
-              style={{
-                overflow: "hidden",
-                borderLeft: "1px solid var(--border)",
-                background: "var(--glass2)",
-              }}
-            >
-              <RightPanel />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* ROW 4 — Bottom analytics charts */}
-      <div style={{ gridRow: "4", overflow: "hidden", borderTop: "1px solid var(--border)" }}>
+      {/* ROW 3 — Analytics charts */}
+      <div style={{ gridRow: "3", overflow: "hidden", borderTop: "1px solid var(--border)" }}>
         <BottomPanel />
       </div>
     </motion.div>
