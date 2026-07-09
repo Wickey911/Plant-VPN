@@ -261,7 +261,7 @@ export default function Dashboard() {
       style={{
         height: "100%",
         display: "grid",
-        gridTemplateRows: "120px 1fr 220px",
+        gridTemplateRows: "120px 1fr",
         overflow: "hidden",
         background: "var(--bg)",
       }}
@@ -271,13 +271,8 @@ export default function Dashboard() {
         <OverviewBar />
       </div>
 
-      {/* ROW 2 — 3D Plant preview card */}
-      <div style={{ gridRow: "2", overflow: "hidden" }}>
-        <Plant3DCard />
-      </div>
-
-      {/* ROW 3 — Analytics charts */}
-      <div style={{ gridRow: "3", overflow: "hidden", borderTop: "1px solid var(--border)" }}>
+      {/* ROW 2 — Analytics charts */}
+      <div style={{ gridRow: "2", overflow: "hidden", borderTop: "1px solid var(--border)" }}>
         <BottomPanel />
       </div>
     </motion.div>
