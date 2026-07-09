@@ -16,7 +16,7 @@ function Gauge({ value, max = 100, label, color, size = 72 }) {
         <svg width={size} height={size} style={{ transform:"rotate(135deg)" }}>
           {/* Track */}
           <circle cx={size/2} cy={size/2} r={r} fill="none"
-            stroke="rgba(255,255,255,0.06)" strokeWidth={5}
+            stroke="rgba(30,60,120,0.12)" strokeWidth={5}
             strokeDasharray={`${circ*0.75} ${circ}`} strokeDashoffset={-offset}
             strokeLinecap="round"/>
           {/* Value */}
@@ -31,10 +31,10 @@ function Gauge({ value, max = 100, label, color, size = 72 }) {
           alignItems:"center", justifyContent:"center",
         }}>
           <span style={{ fontSize:15, fontWeight:700, color, lineHeight:1 }}>{Math.round(pct)}</span>
-          <span style={{ fontSize:8, color:"#4A5878" }}>%</span>
+          <span style={{ fontSize:8, color:"var(--text3)" }}>%</span>
         </div>
       </div>
-      <span style={{ fontSize:9, color:"#8899BB", textAlign:"center", lineHeight:1.3 }}>{label}</span>
+      <span style={{ fontSize:9, color:"var(--text2)", textAlign:"center", lineHeight:1.3 }}>{label}</span>
     </div>
   );
 }
@@ -47,7 +47,7 @@ function AlertRow({ alert }) {
     <motion.div initial={{opacity:0,x:-6}} animate={{opacity:1,x:0}}
       style={{
         display:"flex", gap:8, alignItems:"flex-start",
-        padding:"7px 0", borderBottom:"1px solid rgba(255,255,255,.04)",
+        padding:"7px 0", borderBottom:"1px solid var(--border)",
       }}>
       <div style={{
         width:6, height:6, borderRadius:"50%", background:c,
@@ -57,9 +57,9 @@ function AlertRow({ alert }) {
       <div style={{ flex:1, minWidth:0 }}>
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
           <span style={{ fontSize:10, fontFamily:"var(--mono)", color:"#00D4FF", fontWeight:700 }}>{alert.assetId}</span>
-          <span style={{ fontSize:8, color:"#4A5878" }}>{alert.ts}</span>
+          <span style={{ fontSize:8, color:"var(--text3)" }}>{alert.ts}</span>
         </div>
-        <div style={{ fontSize:10, color:"#8899BB", marginTop:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+        <div style={{ fontSize:10, color:"var(--text2)", marginTop:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
           {alert.message}
         </div>
       </div>
@@ -138,15 +138,18 @@ function KpiCard({ Icon, title, value, subtitle, color, accent, targetPage, filt
       style={{
         display: "flex", alignItems: "center", gap: 9,
         width: "100%", padding: "9px 10px 9px 11px",
-        background: "rgba(255,255,255,0.025)",
-        border: "none", borderRadius: 5,
+        background: "rgba(255,255,255,0.55)",
+        borderTop: "1px solid var(--border)",
+        borderRight: "1px solid var(--border)",
+        borderBottom: "1px solid var(--border)",
         borderLeft: `2.5px solid ${accent}`,
+        borderRadius: 5,
         cursor: "pointer", textAlign: "left",
         transition: "background 0.14s",
         boxSizing: "border-box",
       }}
-      onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.055)"; }}
-      onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.025)"; }}
+      onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.90)"; }}
+      onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.55)"; }}
     >
       {/* Icon */}
       <div style={{ flexShrink: 0, opacity: 0.9 }}>
@@ -244,12 +247,12 @@ export default function LeftPanel() {
   return (
     <div style={{
       height:"100%", display:"flex", flexDirection:"column",
-      background:"rgba(11,15,23,0.95)", borderRight:"1px solid rgba(255,255,255,0.07)",
+      background:"var(--bg2)", borderRight:"1px solid var(--border)",
       overflow:"hidden",
     }}>
       {/* Gauges */}
-      <div style={{ padding:"10px 12px", borderBottom:"1px solid rgba(255,255,255,.07)", flexShrink:0 }}>
-        <div style={{ fontSize:9, color:"#4A5878", textTransform:"uppercase", letterSpacing:1, marginBottom:10 }}>
+      <div style={{ padding:"10px 12px", borderBottom:"1px solid var(--border)", flexShrink:0 }}>
+        <div style={{ fontSize:9, color:"var(--text3)", textTransform:"uppercase", letterSpacing:1, marginBottom:10 }}>
           PLANT HEALTH MATRIX
         </div>
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:"10px 6px" }}>
@@ -260,7 +263,7 @@ export default function LeftPanel() {
       {/* Supervisor KPI Cards */}
       <div style={{
         display:"flex", flexDirection:"column", gap:5,
-        padding:"8px 10px", borderBottom:"1px solid rgba(255,255,255,.07)", flexShrink:0,
+        padding:"8px 10px", borderBottom:"1px solid var(--border)", flexShrink:0,
       }}>
         <KpiCard
           Icon={IconCritical}
@@ -308,7 +311,7 @@ export default function LeftPanel() {
 
       {/* Live alerts */}
       <div style={{ padding:"8px 12px 4px", flexShrink:0 }}>
-        <div style={{ fontSize:9, color:"#4A5878", textTransform:"uppercase", letterSpacing:1 }}>
+        <div style={{ fontSize:9, color:"var(--text3)", textTransform:"uppercase", letterSpacing:1 }}>
           LIVE ALERTS
           {alerts.length > 0 && (
             <span style={{ marginLeft:6, background:"#FF2D55", color:"#fff", borderRadius:8, padding:"1px 5px", fontSize:8 }}>
@@ -319,7 +322,7 @@ export default function LeftPanel() {
       </div>
       <div style={{ flex:1, overflowY:"auto", padding:"0 12px 10px" }}>
         {alerts.length === 0 ? (
-          <div style={{ fontSize:10, color:"#4A5878", textAlign:"center", marginTop:20 }}>
+          <div style={{ fontSize:10, color:"var(--text3)", textAlign:"center", marginTop:20 }}>
             No active alerts
           </div>
         ) : (
@@ -329,12 +332,12 @@ export default function LeftPanel() {
 
       {/* Cyber security */}
       <div style={{
-        padding:"8px 12px", borderTop:"1px solid rgba(255,255,255,.07)",
+        padding:"8px 12px", borderTop:"1px solid var(--border)",
         display:"flex", alignItems:"center", gap:8, flexShrink:0,
       }}>
         <div style={{ width:7, height:7, borderRadius:"50%", background:"#00FF94", boxShadow:"0 0 6px #00FF94" }}/>
-        <div style={{ fontSize:9, color:"#8899BB", flex:1 }}>Cybersecurity</div>
-        <div style={{ fontSize:12, fontWeight:700, color:"#00FF94" }}>{stats.cyber}%</div>
+        <div style={{ fontSize:9, color:"var(--text2)", flex:1 }}>Cybersecurity</div>
+        <div style={{ fontSize:12, fontWeight:700, color:"var(--emerald)" }}>{stats.cyber}%</div>
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ import {
 import { usePlantStore } from "../../store/plantStore";
 import { EQUIPMENT } from "../../data/equipmentData";
 
-const TIP = { contentStyle:{ background:"#0A0F1C", border:"1px solid rgba(0,212,255,.2)", fontSize:10 } };
+const TIP = { contentStyle:{ background:"#fff", border:"1px solid var(--border)", fontSize:10, color:"#1E2A3B" } };
 
 function healthColor(h) {
   if (h > 95) return "#00FF94";
@@ -80,17 +80,17 @@ export default function BottomPanel() {
       height:"100%", display:"grid",
       gridTemplateColumns:"0.85fr 1.15fr 1.4fr 1.3fr",
       borderTop:"1px solid rgba(255,255,255,.07)",
-      background:"rgba(11,15,23,0.96)", overflow:"hidden",
+      background:"var(--bg2)", overflow:"hidden",
     }}>
 
       {/* Asset Distribution */}
-      <div style={{ borderRight:"1px solid rgba(255,255,255,.07)", padding:"8px 12px", overflow:"hidden" }}>
-        <div style={{ fontSize:9, color:"#4A5878", textTransform:"uppercase", letterSpacing:.8, marginBottom:6 }}>
+      <div style={{ borderRight:"1px solid var(--border)", padding:"8px 12px", overflow:"hidden" }}>
+        <div style={{ fontSize:9, color:"var(--text3)", textTransform:"uppercase", letterSpacing:.8, marginBottom:6 }}>
           ASSET DISTRIBUTION
         </div>
         <ResponsiveContainer width="100%" height="80%">
           <BarChart data={typeDist} margin={{ top:4, right:4, left:-20, bottom:4 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1A2235"/>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(30,60,120,0.08)"/>
             <XAxis dataKey="name" tick={{ fill:"#4A5878", fontSize:8 }}/>
             <YAxis tick={{ fill:"#4A5878", fontSize:8 }}/>
             <Tooltip {...TIP}/>
@@ -104,8 +104,8 @@ export default function BottomPanel() {
       </div>
 
       {/* Failure Risk Ranking */}
-      <div style={{ borderRight:"1px solid rgba(255,255,255,.07)", padding:"8px 12px", overflow:"hidden" }}>
-        <div style={{ fontSize:9, color:"#4A5878", textTransform:"uppercase", letterSpacing:.8, marginBottom:6 }}>
+      <div style={{ borderRight:"1px solid var(--border)", padding:"8px 12px", overflow:"hidden" }}>
+        <div style={{ fontSize:9, color:"var(--text3)", textTransform:"uppercase", letterSpacing:.8, marginBottom:6 }}>
           FAILURE RISK RANKING (TOP 8)
         </div>
         <div style={{ overflowY:"auto", height:"calc(100% - 22px)" }}>
@@ -116,7 +116,7 @@ export default function BottomPanel() {
                 display:"grid", gridTemplateColumns:"16px 55px 1fr 28px",
                 alignItems:"center", gap:5, marginBottom:5, fontSize:10,
               }}>
-                <span style={{ color:"#4A5878", fontSize:9 }}>{i+1}</span>
+                <span style={{ color:"var(--text3)", fontSize:9 }}>{i+1}</span>
                 <span style={{ fontFamily:"var(--mono)", color:"#00D4FF", fontSize:10, fontWeight:600 }}>{eq.id}</span>
                 <div style={{ background:"rgba(255,255,255,.05)", borderRadius:2, height:5, overflow:"hidden" }}>
                   <div style={{ width:`${eq.fail}%`, height:"100%", background:col, transition:"width .5s",
@@ -130,13 +130,13 @@ export default function BottomPanel() {
       </div>
 
       {/* Live Sensor Trend */}
-      <div style={{ borderRight:"1px solid rgba(255,255,255,.07)", padding:"8px 12px", overflow:"hidden" }}>
-        <div style={{ fontSize:9, color:"#4A5878", textTransform:"uppercase", letterSpacing:.8, marginBottom:6 }}>
+      <div style={{ borderRight:"1px solid var(--border)", padding:"8px 12px", overflow:"hidden" }}>
+        <div style={{ fontSize:9, color:"var(--text3)", textTransform:"uppercase", letterSpacing:.8, marginBottom:6 }}>
           LIVE SENSOR TREND — AVG TEMP (°C) & VIBRATION (mm/s)
         </div>
         <ResponsiveContainer width="100%" height="82%">
           <LineChart data={history} margin={{ top:4, right:8, left:-18, bottom:0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1A2235"/>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(30,60,120,0.08)"/>
             <XAxis dataKey="t" tick={{ fill:"#4A5878", fontSize:7 }} interval="preserveStartEnd"/>
             <YAxis yAxisId="l" tick={{ fill:"#4A5878", fontSize:8 }}/>
             <YAxis yAxisId="r" orientation="right" tick={{ fill:"#4A5878", fontSize:8 }} domain={[0,5]}/>
@@ -152,7 +152,7 @@ export default function BottomPanel() {
 
         {/* Header */}
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-          <div style={{ fontSize:9, color:"#4A5878", textTransform:"uppercase", letterSpacing:.8 }}>
+          <div style={{ fontSize:9, color:"var(--text3)", textTransform:"uppercase", letterSpacing:.8 }}>
             K-102 REWORK — COST IMPACT
           </div>
           <span style={{
@@ -177,16 +177,16 @@ export default function BottomPanel() {
               background:"rgba(255,255,255,0.03)", borderRadius:4,
               border:`1px solid ${color}22`, padding:"4px 6px",
             }}>
-              <div style={{ fontSize:8, color:"#4A5878", marginBottom:2 }}>{label}</div>
+              <div style={{ fontSize:8, color:"var(--text3)", marginBottom:2 }}>{label}</div>
               <div style={{ fontSize:13, fontWeight:bold?800:700, color, fontFamily:"var(--mono)", lineHeight:1 }}>{value}</div>
-              <div style={{ fontSize:8, color:"#4A5878", marginTop:2 }}>{sub}</div>
+              <div style={{ fontSize:8, color:"var(--text3)", marginTop:2 }}>{sub}</div>
             </div>
           ))}
         </div>
 
         {/* Cost breakdown bar */}
         <div>
-          <div style={{ fontSize:8, color:"#4A5878", marginBottom:3 }}>COST BREAKDOWN</div>
+          <div style={{ fontSize:8, color:"var(--text3)", marginBottom:3 }}>COST BREAKDOWN</div>
           <div style={{ display:"flex", height:8, borderRadius:4, overflow:"hidden", gap:1 }}>
             {[
               { v: costData.implementation.labor,       c:"#60A5FA", label:"Labor" },
@@ -209,7 +209,7 @@ export default function BottomPanel() {
             ].map(({ c, l }) => (
               <div key={l} style={{ display:"flex", alignItems:"center", gap:3 }}>
                 <div style={{ width:5, height:5, borderRadius:"50%", background:c, flexShrink:0 }}/>
-                <span style={{ fontSize:7.5, color:"#4A5878", fontFamily:"var(--mono)" }}>{l}</span>
+                <span style={{ fontSize:7.5, color:"var(--text3)", fontFamily:"var(--mono)" }}>{l}</span>
               </div>
             ))}
           </div>
@@ -225,7 +225,7 @@ export default function BottomPanel() {
             <div style={{ fontSize:8, color:"#22C55E", fontWeight:700 }}>
               AI RECOMMENDATION · {costData.confidence}% confidence
             </div>
-            <div style={{ fontSize:8, color:"#4A5878" }}>
+            <div style={{ fontSize:8, color:"var(--text3)" }}>
               Schedule rework within {costData.actionWindow} days to capture full savings
             </div>
           </div>
@@ -233,7 +233,7 @@ export default function BottomPanel() {
             <div style={{ fontSize:9, color:"#22C55E", fontWeight:800, fontFamily:"var(--mono)" }}>
               {fmt(netSavings)}
             </div>
-            <div style={{ fontSize:7, color:"#4A5878" }}>saved</div>
+            <div style={{ fontSize:7, color:"var(--text3)" }}>saved</div>
           </div>
         </div>
 
