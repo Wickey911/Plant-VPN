@@ -27,6 +27,36 @@ export default function Sidebar({ page, setPage, kpis }) {
         </div>
       </div>
 
+      {/* 3D Simulation launch button */}
+      <motion.button
+        onClick={() => setPage("digitaltwin")}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.97 }}
+        style={{
+          margin: "0 12px 4px",
+          padding: "10px 12px",
+          borderRadius: 8,
+          cursor: "pointer",
+          background: page === "digitaltwin"
+            ? "rgba(56,189,248,0.18)"
+            : "linear-gradient(135deg, rgba(37,99,235,0.10) 0%, rgba(56,189,248,0.08) 100%)",
+          border: `1px solid ${page === "digitaltwin" ? "rgba(56,189,248,0.50)" : "rgba(56,189,248,0.22)"}`,
+          display: "flex", alignItems: "center", gap: 10,
+          textAlign: "left", width: "calc(100% - 24px)",
+        }}
+      >
+        <span style={{ fontSize: 18, lineHeight: 1 }}>🔷</span>
+        <div>
+          <div style={{ fontSize: 10, fontWeight: 700, color: "var(--cyan)", letterSpacing: 0.3 }}>
+            Open 3D Simulation
+          </div>
+          <div style={{ fontSize: 9, color: "var(--text3)", marginTop: 2 }}>
+            Interactive plant view
+          </div>
+        </div>
+        <span style={{ marginLeft: "auto", fontSize: 11, color: "var(--cyan)", opacity: 0.7 }}>→</span>
+      </motion.button>
+
       <nav className="sidebar-nav">
         {NAV.map((item) => (
           <div key={item.id}>
